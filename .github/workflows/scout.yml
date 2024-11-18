@@ -63,9 +63,7 @@ jobs:
         id: docker-scout
         if: ${{ github.event_name == 'pull_request' }}
         run: |
-          docker scout cves ${{
-            steps.meta.outputs.tags
-          }} > docker_scout_report.txt || echo "Docker Scout failed to generate report"
+          docker scout cves "${{ steps.meta.outputs.tags }}" > docker_scout_report.txt || echo "Docker Scout failed to generate report"
       
       - name: Upload Docker Scout Report as Artifact
         uses: actions/upload-artifact@v3
