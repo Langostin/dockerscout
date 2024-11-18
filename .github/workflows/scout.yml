@@ -62,7 +62,8 @@ jobs:
       # Instalar Docker Scout
       - name: Install Docker Scout
         run: |
-          curl -fsSL https://github.com/docker/scout-cli/releases/download/v0.3.0/scout-linux-amd64.tar.gz -o scout.tar.gz
+          # Descargar Docker Scout desde la URL correcta
+          curl -fsSL https://github.com/docker/scout-cli/releases/download/v0.5.0/scout-linux-amd64.tar.gz -o scout.tar.gz
           tar -xzvf scout.tar.gz
           sudo mv scout /usr/local/bin/
           docker scout --version  # Verificar instalación
