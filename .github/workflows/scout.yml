@@ -44,10 +44,10 @@ jobs:
           labels: |
             org.opencontainers.image.revision=${{ env.SHA }}
           tags: |
-            type=edge,branch=$repo.default_branch
+            type=edge,branch=${{ github.ref_name }}
             type=semver,pattern=v{{version}}
             type=sha,prefix=,suffix=,format=short
-      
+
       - name: Build and push Docker image
         id: build-and-push
         uses: docker/build-push-action@v4.0.0
@@ -66,13 +66,16 @@ jobs:
           curl -fsSL https://github.com/docker/scout-cli/releases/download/v0.5.0/scout-linux-amd64.tar.gz -o scout.tar.gz
           tar -xzvf scout.tar.gz
           sudo mv scout /usr/local/bin/
-          docker scout --version  # Verificar instalación
+          docker scout version  # Verificar instalación
 
       - name: Docker Scout - Save report to text file
         id: docker-scout
         if: ${{ github.event_name == 'pull_request' }}
         run: |
-          docker scout cves "${{ steps.meta.outputs.tags }}" > docker_scout_report.txt || echo "Docker Scout failed to generate report"
+          # Usar el nombre de la imagen y la etiqueta generada para el análisis
+          IMAGE_TAG="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.tags }}"
+          echo "Running Docker Scout analysis on image: $IMAGE_TAG"
+          docker scout cves $IMAGE_TAG > docker_scout_report.txt || echo "Docker Scout failed to generate report"
       
       - name: Upload Docker Scout Report as Artifact
         uses: actions/upload-artifact@v3
