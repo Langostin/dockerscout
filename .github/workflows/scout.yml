@@ -59,16 +59,20 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           
-      # Docker Scout - Guardar reporte en archivo de texto
-      - name: Docker Scout - Save report to text file
+      # Usar contenedor con Docker Scout instalado
+      - name: Run Docker Scout analysis inside a container
         id: docker-scout
         if: ${{ github.event_name == 'pull_request' }}
         run: |
-          # Usar el nombre de la imagen y la etiqueta generada para el análisis
           IMAGE_TAG="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.tags }}"
           echo "Running Docker Scout analysis on image: $IMAGE_TAG"
-          docker scout cves $IMAGE_TAG > docker_scout_report.txt || echo "Docker Scout failed to generate report"
-      
+          
+          # Ejecutar Docker Scout dentro de un contenedor que tenga Docker Scout preinstalado
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            -v $(pwd):/workspace \
+            docker/scout-cli cves $IMAGE_TAG > docker_scout_report.txt || echo "Docker Scout failed to generate report"
+
       - name: Upload Docker Scout Report as Artifact
         uses: actions/upload-artifact@v3
         with:
