@@ -59,15 +59,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           
-      # Instalar Docker Scout
-      - name: Install Docker Scout
-        run: |
-          # Descargar Docker Scout desde la URL correcta
-          curl -fsSL https://github.com/docker/scout-cli/releases/download/v0.5.0/scout-linux-amd64.tar.gz -o scout.tar.gz
-          tar -xzvf scout.tar.gz
-          sudo mv scout /usr/local/bin/
-          docker scout version  # Verificar instalación
-
+      # Docker Scout - Guardar reporte en archivo de texto
       - name: Docker Scout - Save report to text file
         id: docker-scout
         if: ${{ github.event_name == 'pull_request' }}
