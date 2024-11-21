@@ -58,18 +58,3 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-      # Usar el nombre de la imagen y la etiqueta generada para el análisis
-      - name: Docker Scout - Save report to text file
-        id: docker-scout
-        if: ${{ github.event_name == 'pull_request' }}
-        run: |
-          IMAGE_TAG="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
-          echo "Running Docker Scout analysis on image: $IMAGE_TAG"
-          docker scout cves "$IMAGE_TAG" > docker_scout_report.txt || echo "Docker Scout failed to generate report"
-
-      - name: Upload Docker Scout Report as Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: docker-scout-report
-          path: docker_scout_report.txt
