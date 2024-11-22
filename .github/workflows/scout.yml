@@ -44,9 +44,9 @@ jobs:
           labels: |
             org.opencontainers.image.revision=${{ env.SHA }}
           tags: |
-            type=edge,branch=$repo.default_branch
-            type=semver,pattern=v{{version}}
-            type=sha,prefix=,suffix=,format=short
+            type=edge,branch=$repo.default_branch,prefix=A_
+            type=semver,pattern=v{{version}},prefix=A_
+            type=sha,prefix=A_,suffix=,format=short
 
       - name: Build and push Docker image
         id: build-and-push
