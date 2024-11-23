@@ -1,4 +1,5 @@
 image: atlassian/default-image:latest
+image: docker:20.10.24  # Imagen base con Docker
 
 pipelines:
   default:
@@ -19,3 +20,28 @@ pipelines:
           - docker tag "$DOCKER_IMAGE_NAME" "$DOCKER_IMAGE_NAME:$TAG"
           # Subir la imagen a Docker Hub
           - docker push "$DOCKER_IMAGE_NAME:$TAG"
+          # Configuración inicial
+          - echo "Iniciando pipeline de Build y Push"
+          - export REGISTRY="docker.io"
+          - export IMAGE_NAME="erickdaniel0/dockerscout"
+
+          # Generar etiquetas
+          - echo "Generando etiquetas con prefijo B_"
+          - export SHORT_SHA="B_$(echo $BITBUCKET_COMMIT | cut -c 1-7)"
+          - export DOCKER_IMAGE_TAG="$REGISTRY/$IMAGE_NAME:latest"
+          - echo "Etiqueta principal: $DOCKER_IMAGE_TAG"
+          - echo "Etiqueta secundaria: $REGISTRY/$IMAGE_NAME:$SHORT_SHA"
+
+          # Iniciar sesión en Docker Hub
+          - echo $DOCKER_HUB_PAT | docker login -u $DOCKER_HUB_USER --password-stdin
+
+          # Construir y subir la imagen
+          - echo "Construyendo y subiendo la imagen Docker"
+          - docker build -t $DOCKER_IMAGE_TAG -t $REGISTRY/$IMAGE_NAME:$SHORT_SHA .
+          - docker push $DOCKER_IMAGE_TAG
+          - docker push $REGISTRY/$IMAGE_NAME:$SHORT_SHA
+
+definitions:
+  services:
+    docker:
+      memory: 1024
