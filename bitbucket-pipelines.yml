@@ -29,7 +29,15 @@ pipelines:
           - echo "Generando etiquetas con prefijo B_"
           - SHORT_SHA="B_$(echo $BITBUCKET_COMMIT | cut -c 1-7)"
           - DOCKER_IMAGE_TAG="$REGISTRY/$IMAGE_NAME:latest"
-          - echo "$DOCKER_HUB_PAT" | docker login -u "$DOCKER_HUB_USER" --password-stdin
+
+          # Validar variables de entorno
+          - if [ -z "$DOCKER_HUB_USER" ] || [ -z "$DOCKER_HUB_PAT" ]; then
+              echo "Error: DOCKER_HUB_USER o DOCKER_HUB_PAT no están configurados";
+              exit 1;
+            fi
+
+          # Iniciar sesión en Docker Hub
+          - echo "$DOCKER_HUB_PAT" | docker login --username "$DOCKER_HUB_USER" --password-stdin
 
           # Construir y subir la imagen
           - echo "Construyendo y subiendo la imagen Docker"
