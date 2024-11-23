@@ -9,7 +9,7 @@ pipelines:
           - docker
         script:
           - echo "Iniciando pipeline para construir y pujar imagen Docker"
-          # Iniciar sesión en Docker Hub
+          # Iniciar sesiÃ³n en Docker Hub
           - echo "$DOCKER_PAT" | docker login -u "$DOCKER_USERNAME" --password-stdin
           # Obtener el hash del commit actual (primeros 7 caracteres)
           - COMMIT_HASH=$(git rev-parse --short HEAD)
@@ -27,19 +27,19 @@ pipelines:
 
           # Generar etiquetas
           - echo "Generando etiquetas con prefijo B_"
-          - export SHORT_SHA="B_$(echo $BITBUCKET_COMMIT | cut -c 1-7)"
-          - export DOCKER_IMAGE_TAG="$REGISTRY/$IMAGE_NAME:latest"
+          - SHORT_SHA="B_$(echo $BITBUCKET_COMMIT | cut -c 1-7)"
+          - DOCKER_IMAGE_TAG="$REGISTRY/$IMAGE_NAME:latest"
           - echo "Etiqueta principal: $DOCKER_IMAGE_TAG"
           - echo "Etiqueta secundaria: $REGISTRY/$IMAGE_NAME:$SHORT_SHA"
 
-          # Iniciar sesiÃ³n en Docker Hub
-          - echo $DOCKER_HUB_PAT | docker login -u $DOCKER_HUB_USER --password-stdin
+          # Iniciar sesión en Docker Hub
+          - echo "$DOCKER_HUB_PAT" | docker login -u "$DOCKER_HUB_USER" --password-stdin
 
           # Construir y subir la imagen
           - echo "Construyendo y subiendo la imagen Docker"
-          - docker build -t $DOCKER_IMAGE_TAG -t $REGISTRY/$IMAGE_NAME:$SHORT_SHA .
-          - docker push $DOCKER_IMAGE_TAG
-          - docker push $REGISTRY/$IMAGE_NAME:$SHORT_SHA
+          - docker build -t "$DOCKER_IMAGE_TAG" -t "$REGISTRY/$IMAGE_NAME:$SHORT_SHA" .
+          - docker push "$DOCKER_IMAGE_TAG"
+          - docker push "$REGISTRY/$IMAGE_NAME:$SHORT_SHA"
 
 definitions:
   services:
