@@ -18,10 +18,16 @@ repositories = {
     "Bitbucket": "bitbucket"
 }
 
-# Agregar y confirmar los cambios
-run_command(["git", "add", "."], "Local")
-run_command(["git", "commit", "-m", "Automatización de subida a múltiples repositorios"], "Local")
+# Verificar si hay cambios antes de hacer commit
+status_result = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True)
 
-# Subir a cada repositorio
-for repo_name, remote in repositories.items():
-    run_command(["git", "push", remote, "main"], repo_name)
+if status_result.stdout.strip():  # Si hay cambios
+    # Agregar y confirmar los cambios
+    run_command(["git", "add", "."], "Local")
+    run_command(["git", "commit", "-m", "Automatización de subida a múltiples repositorios"], "Local")
+
+    # Subir a cada repositorio
+    for repo_name, remote in repositories.items():
+        run_command(["git", "push", remote, "main"], repo_name)
+else:
+    print("⚠️ No hay cambios para confirmar.")
