@@ -29,10 +29,6 @@ pipelines:
           - echo "Generando etiquetas con prefijo B_"
           - SHORT_SHA="B_$(echo $BITBUCKET_COMMIT | cut -c 1-7)"
           - DOCKER_IMAGE_TAG="$REGISTRY/$IMAGE_NAME:latest"
-          - echo "Etiqueta principal: $DOCKER_IMAGE_TAG"
-          - echo "Etiqueta secundaria: $REGISTRY/$IMAGE_NAME:$SHORT_SHA"
-
-          # Iniciar sesión en Docker Hub
           - echo "$DOCKER_HUB_PAT" | docker login -u "$DOCKER_HUB_USER" --password-stdin
 
           # Construir y subir la imagen
