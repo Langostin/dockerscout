@@ -1,5 +1,4 @@
 image: atlassian/default-image:latest
-image: docker:20.10.24  # Imagen base con Docker
 
 pipelines:
   default:
@@ -9,7 +8,7 @@ pipelines:
           - docker
         script:
           - echo "Iniciando pipeline para construir y pujar imagen Docker"
-          # Iniciar sesiÃ³n en Docker Hub
+          # Iniciar sesiï¿½n en Docker Hub
           - echo "$DOCKER_PAT" | docker login -u "$DOCKER_USERNAME" --password-stdin
           # Obtener el hash del commit actual (primeros 7 caracteres)
           - COMMIT_HASH=$(git rev-parse --short HEAD)
@@ -20,32 +19,4 @@ pipelines:
           - docker tag "$DOCKER_IMAGE_NAME" "$DOCKER_IMAGE_NAME:$TAG"
           # Subir la imagen a Docker Hub
           - docker push "$DOCKER_IMAGE_NAME:$TAG"
-          # ConfiguraciÃ³n inicial
-          - echo "Iniciando pipeline de Build y Push"
-          - export REGISTRY="docker.io"
-          - export IMAGE_NAME="erickdaniel0/dockerscout"
 
-          # Generar etiquetas
-          - echo "Generando etiquetas con prefijo B_"
-          - SHORT_SHA="B_$(echo $BITBUCKET_COMMIT | cut -c 1-7)"
-          - DOCKER_IMAGE_TAG="$REGISTRY/$IMAGE_NAME:latest"
-
-          # Validar variables de entorno
-          - if [ -z "$DOCKER_HUB_USER" ] || [ -z "$DOCKER_HUB_PAT" ]; then
-              echo "Error: DOCKER_HUB_USER o DOCKER_HUB_PAT no están configurados";
-              exit 1;
-            fi
-
-          # Iniciar sesión en Docker Hub
-          - echo "$DOCKER_HUB_PAT" | docker login --username "$DOCKER_HUB_USER" --password-stdin
-
-          # Construir y subir la imagen
-          - echo "Construyendo y subiendo la imagen Docker"
-          - docker build -t "$DOCKER_IMAGE_TAG" -t "$REGISTRY/$IMAGE_NAME:$SHORT_SHA" .
-          - docker push "$DOCKER_IMAGE_TAG"
-          - docker push "$REGISTRY/$IMAGE_NAME:$SHORT_SHA"
-
-definitions:
-  services:
-    docker:
-      memory: 1024
