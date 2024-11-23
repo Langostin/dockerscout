@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gestor de Tareas</title>
+    <link href="static/styles.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Gestor de Tareas</h1>
+      <form method="post" action="/">
+        <input type="text" name="title" placeholder="Nueva tarea" required>
+        <button type="submit">Añadir</button>
+      </form>
+      <ul>
+        {% for task in tasks %}
+          <li>
+            {% if task.completed %}
+              <strike>{{ task.title }}</strike>
+            {% else %}
+              {{ task.title }}
+            {% endif %}
+            <div>
+              <a href="{{ url_for('complete', task_id=task.id) }}">Completar</a>
+              <a href="{{ url_for('delete', task_id=task.id) }}">Eliminar</a>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </body>
+</html>
