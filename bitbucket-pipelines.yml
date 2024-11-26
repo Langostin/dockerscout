@@ -1,0 +1,21 @@
+image: atlassian/default-image:latest
+
+pipelines:
+  default:
+    - step:
+        name: Build and Push Docker Image
+        services:
+          - docker
+        script:
+          - echo "Iniciando pipeline para construir y pujar imagen Docker"
+          # Iniciar sesión en Docker Hub
+          - echo "$DOCKER_PAT" | docker login -u "$DOCKER_USERNAME" --password-stdin
+          # Obtener el hash del commit actual (primeros 7 caracteres)
+          - COMMIT_HASH=$(git rev-parse --short HEAD)
+          # Construir la imagen Docker
+          - docker build -t "$DOCKER_IMAGE_NAME" .
+          # Generar una etiqueta con prefijo B_
+          - TAG="B_${COMMIT_HASH}"
+          - docker tag "$DOCKER_IMAGE_NAME" "$DOCKER_IMAGE_NAME:$TAG"
+          # Subir la imagen a Docker Hub
+          - docker push "$DOCKER_IMAGE_NAME:$TAG"
