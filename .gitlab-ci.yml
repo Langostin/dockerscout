@@ -20,14 +20,14 @@ build_image:
     - docker buildx create --use --name builder-instance
 
     - echo "Generando metadatos de la imagen"
-    - export DOCKER_IMAGE_TAG="$REGISTRY/$IMAGE_NAME:latest"
-    - export SHORT_SHA="L_$(echo $CI_COMMIT_SHA | cut -c 1-7)"  # Agregar prefijo `g`
+    - export DOCKER_IMAGE_TAG="$REGISTRY/$IMAGE_NAME:latest"  # Esta variable ya no se usa
+    - export SHORT_SHA="L_$(echo $CI_COMMIT_SHA | cut -c 1-7)"  # Agregar prefijo `L`
 
     - echo "Iniciando sesión en Docker Hub"
     - echo "$DOCKER_HUB_PAT" | docker login --username "$DOCKER_HUB_USER" --password-stdin
 
     - echo "Construyendo y subiendo la imagen Docker"
-    - docker buildx build --push --label "org.opencontainers.image.revision=$CI_COMMIT_SHA" --tag $DOCKER_IMAGE_TAG --tag "$REGISTRY/$IMAGE_NAME:$SHORT_SHA" .
+    - docker buildx build --push --label "org.opencontainers.image.revision=$CI_COMMIT_SHA" --tag "$REGISTRY/$IMAGE_NAME:$SHORT_SHA" .
 
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
